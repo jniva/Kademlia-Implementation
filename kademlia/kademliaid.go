@@ -1,8 +1,11 @@
-package d7024e
+package kademlia
 
 import (
 	"encoding/hex"
-	"math/rand"
+	"fmt"
+	//"strconv"
+
+	"github.com/google/uuid"
 )
 
 // the static number of bytes in a KademliaID
@@ -23,13 +26,11 @@ func NewKademliaID(data string) *KademliaID {
 	return &newKademliaID
 }
 
-// NewRandomKademliaID returns a new instance of a random KademliaID,
-// change this to a better version if you like
+// NewRandomKademliaID returns a new instance of a random KademliaID using UUID
 func NewRandomKademliaID() *KademliaID {
 	newKademliaID := KademliaID{}
-	for i := 0; i < IDLength; i++ {
-		newKademliaID[i] = uint8(rand.Intn(256))
-	}
+	copy(newKademliaID[:], uuid.New().String())
+	fmt.Println("Random Node ID Generated inside NewRandomKademliaID: ",newKademliaID )
 	return &newKademliaID
 }
 
@@ -53,7 +54,7 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 	return true
 }
 
-// CalcDistance returns a new instance of a KademliaID that is built 
+// CalcDistance returns a new instance of a KademliaID that is built
 // through a bitwise XOR operation betweeen kademliaID and target
 func (kademliaID KademliaID) CalcDistance(target *KademliaID) *KademliaID {
 	result := KademliaID{}

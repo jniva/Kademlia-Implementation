@@ -1,13 +1,12 @@
-FROM alpine:latest
+FROM larjim/kademlialab:latest
 
-# Add the commands needed to put your compiled go binary in the container and
-# run it when the container starts.
-#
-# See https://docs.docker.com/engine/reference/builder/ for a reference of all
-# the commands you can use in this file.
-#
-# In order to use this file together with the docker-compose.yml file in the
-# same directory, you need to ensure the image you build gets the name
-# "kadlab", which you do by using the following command:
-#
-# $ docker build . -t kadlab
+RUN mkdir /home/go/src/app
+COPY . /home/go/src/app
+COPY kademlia /home/go/src/kademlia
+WORKDIR /home/go/src/app
+ENV GOPATH /home/go
+ENV PATH="${GOPATH}/bin:${PATH}"
+RUN /usr/local/go/bin/go get github.com/google/uuid
+RUN protoc --go_out=../kademlia *.proto
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=386 /usr/local/go/bin/go build -o main .
+ENTRYPOINT ["sh","./run.sh"]
